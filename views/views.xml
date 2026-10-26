@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_inherit_isbn" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.barcode</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_template_id']" position="after">
+                <field name="barcode" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_form_inherit_barcode" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.barcode</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_ids_without_package']/list//field[@name='product_id']" position="after">
+                <field name="barcode" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_form_inherit_isbn" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.barcode</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_id']" position="after">
+                <field name="barcode" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_move_form_inherit_isbn" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.barcode</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_line_ids']/list//field[@name='product_id']" position="after">
+                <field name="barcode" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_stock_quant_tree_editable_inherit_barcode" model="ir.ui.view">
+        <field name="name">stock.quant.tree.editable.inherit.barcode</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree_editable"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="barcode" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_stock_quant_tree_editable_inherit_barcode_isbn" model="ir.ui.view">
+        <field name="name">stock.quant.tree.editable.inherit.barcode.isbn</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree_inventory_editable"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="barcode" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="quant_search_view" model="ir.ui.view">
+        <field name="name">stock.quant.search</field>
+        <field name="model">stock.quant</field>
+        <field eval="10" name="priority"/>
+        <field name="arch" type="xml">
+            <search string="Quants">
+                <field name="barcode"/>
+                <field name="product_id"/>
+                <field name="location_id"/>
+                <field name="warehouse_id"/>
+                <field name="storage_category_id" groups="stock.group_stock_multi_locations"/>
+                <field name="user_id"/>
+                <field name="inventory_date"/>
+                <field name="product_categ_id"/>
+                <field name="product_tmpl_id"/>
+                <field name="barcode_name"/>
+                <field name="package_id" groups="stock.group_tracking_lot"/>
+                <field name="lot_id" groups="stock.group_production_lot"/>
+                <field name="owner_id" groups="stock.group_tracking_owner"/>
+                <field name="lot_properties"/>
+                <group expand='0' string='Filters'>
+                    <filter name='internal_loc' string="Internal Locations"
+                            domain="[('location_id.usage','=', 'internal')]"/>
+                    <filter name='transit_loc' string="Transit Locations"
+                            domain="[('location_id.usage' ,'=', 'transit')]"/>
+                    <separator/>
+                    <filter name="on_hand" string="On Hand" domain="[('on_hand', '=', True)]"/>
+                    <filter name="to_count" string="To Count"
+                            domain="[('inventory_date', '&lt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter name="to_apply" string="To Apply" domain="[('inventory_quantity_set', '=', True)]"/>
+                    <filter name="priority_products" string="Starred Products" domain="[('is_favorite', '=', True)]"/>
+                    <separator/>
+                    <filter name="in_stock" string="In Stock" domain="[('quantity', '&gt;', 0.0)]"/>
+                    <filter name="conflicts" string="Conflicts" domain="[('is_outdated', '=', True)]"/>
+                    <filter name="negative" string="Negative Stock" domain="[('quantity', '&lt;', 0.0)]"/>
+                    <filter name="reserved" string="Reservations" domain="[('reserved_quantity', '&gt;', 0.0)]"/>
+                    <separator/>
+                    <filter name="filter_in_date" date="in_date"/>
+                    <separator/>
+                    <filter name="my_count" string="My Counts" domain="[('user_id', '=', uid)]"/>
+                </group>
+                <group expand='0' string='Group by...'>
+                    <filter string='Product' name="productgroup" context="{'group_by': 'product_id'}"/>
+                    <filter string='Product Category' name="productcategorygroup"
+                            context="{'group_by': 'product_categ_id'}"/>
+                    <filter string='Location' name="locationgroup" domain="[]" context="{'group_by': 'location_id'}"/>
+                    <filter string='Storage Category' name="storagecategorygroup" domain="[]"
+                            context="{'group_by': 'storage_category_id'}"/>
+                    <filter string='Owner' name="owner" context="{'group_by': 'owner_id'}"
+                            groups="stock.group_tracking_owner"/>
+                    <filter string='Lot/Serial Number' name="Lot_Serial_number" context="{'group_by': 'lot_id'}"
+                            groups="stock.group_production_lot"/>
+                    <filter string='Package' name="package" domain="[]" context="{'group_by': 'package_id'}"
+                            groups="stock.group_tracking_lot"/>
+                    <filter string='Company' name="company" domain="[]" context="{'group_by': 'company_id'}"
+                            groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_stock_quant_pivot_report" model="ir.ui.view">
+        <field name="name">stock.quant.pivot.report</field>
+        <field name="model">stock.quant</field>
+        <field name="arch" type="xml">
+            <pivot string="Stock Reporting Pivot" sample="1">
+                <field name="barcode_name" type="row"/>
+                <field name="location_id" type="col"/>
+                <field name="quantity" type="measure"/>
+                <field name="reserved_quantity" type="measure"/>
+                <field name="inventory_quantity" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_stock_reporting_pivot" model="ir.actions.act_window">
+        <field name="name">Stock Reporting Pivot</field>
+        <field name="res_model">stock.quant</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="search_view_id" ref="quant_search_view"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_stock_quant_pivot_report')})
+        ]"/>
+        <field name="context">{
+            'search_default_internal_loc': 1,
+            'search_default_in_stock': 1
+            }
+        </field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No inventory records found!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_stock_reporting_pivot"
+              name="Stock Reporting Pivot"
+              parent="stock.menu_warehouse_report"
+              action="action_stock_reporting_pivot"
+              sequence="20"/>
+
+</odoo>
+
+
+
