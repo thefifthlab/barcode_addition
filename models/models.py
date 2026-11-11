@@ -1,11 +1,11 @@
 from odoo import fields, models, api
 
 
-class SaleOrderLine(models.Model):
-    _inherit = 'sale.order.line'
-
-    barcode = fields.Char(related='product_id.barcode', string='Barcode/ISBN', store=True)
-
+# class SaleOrderLine(models.Model):
+#     _inherit = 'sale.order.line'
+#
+#     barcode = fields.Char(related='product_id.barcode', string='Barcode/ISBN', store=True)
+#
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
