@@ -8,7 +8,7 @@ class AccountMove(models.Model):
         string='Customer Code',
         related='partner_id.customer_code',  # Change to partner_id.your_custom_field if needed
         store=True,
-        readonly=True
+        readonly=False
     )
 
     @api.onchange('partner_id')
